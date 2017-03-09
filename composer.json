@@ -1,0 +1,15 @@
+{
+    "name": "ronte-ltd/push-bundle",
+    "description": "Use to send push notifications",
+    "license": "MIT",
+    "type": "symfony-bundle",
+    "autoload": {
+        "psr-4": { "RonteLtd\\PushBundle\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "require": {
+        "duccio/apns-php": "dev-master"
+    }
+}

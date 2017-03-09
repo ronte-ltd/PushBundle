@@ -1,0 +1,18 @@
+services:
+    ronte_ltd_push.pusher:
+        class: RonteLtd\PushBundle\Pusher\Pusher
+        calls:
+            - [ setApns, ["@ronte_ltd_push.apns"]]
+            - [ setGearmanServer, ["%ronte_ltd_push.gearman_server%"]]
+            - [ setGearmanPort, ["%ronte_ltd_push.gearman_port%"]]
+
+    ronte_ltd_push.apns:
+        class: RonteLtd\PushBundle\Pusher\Apns
+        calls:
+            - [ setCertificatesDir, [ "%ronte_ltd_push.apns_certificates_dir%" ]]
+            - [ setPushEnv,["%ronte_ltd_push.push_env%"]]
+            - [ setLogger,["@ronte_ltd_push.apns_logger"]]
+
+    ronte_ltd_push.apns_logger:
+        class: RonteLtd\PushBundle\Logger\ApnsLogger
+        arguments: ["%kernel.logs_dir%"]
