@@ -18,7 +18,7 @@ class RonteLtdPushExtension extends ConfigurableExtension
         $container->setParameter('push.gearman_server', $mergedConfig['gearman_server']);
         $container->setParameter('push.gearman_port', $mergedConfig['gearman_port']);
 
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
     }
 }
