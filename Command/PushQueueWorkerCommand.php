@@ -2,26 +2,51 @@
 
 namespace RonteLtd\PushBundle\Command;
 
+use RonteLtd\PushBundle\Pusher\Pusher;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class PushQueueWorkerCommand
  * @package RonteLtd\PushBundle\Command
  */
-class PushQueueWorkerCommand extends Command implements ContainerAwareInterface
+class PushQueueWorkerCommand extends Command
 {
-    private $container;
+    /**
+     * @var Pusher
+     */
+    private $pusher;
 
     /**
-     * @param ContainerInterface|null $container
+     * @var string
      */
-    public function setContainer(ContainerInterface $container = null)
+    private $gearmanServer;
+
+    /**
+     * @var int
+     */
+    private $gearmanPort;
+
+    /**
+     * PushQueueWorkerCommand constructor.
+     * @param string $gearmanServer
+     * @param $gearmanPort
+     */
+    public function __construct($gearmanServer, $gearmanPort)
     {
-        $this->container = $container;
+        $this->gearmanServer = $gearmanServer;
+        $this->gearmanPort = $gearmanPort;
+
+        parent::__construct();
+    }
+
+    /**
+     * @param Pusher $pusher
+     */
+    public function setPusher(Pusher $pusher)
+    {
+        $this->pusher = $pusher;
     }
 
     /**
@@ -31,11 +56,10 @@ class PushQueueWorkerCommand extends Command implements ContainerAwareInterface
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $container = $this->container;
         $worker = new \GearmanWorker();
         $worker->addServer(
-            $container->getParameter('ronte_push.gearman_server'),
-            $container->getParameter('ronte_push.gearman_port')
+            $this->gearmanServer,
+            $this->gearmanPort
         );
         $worker->addFunction('sendPush', [$this, 'sendPush']);
 
@@ -55,9 +79,7 @@ class PushQueueWorkerCommand extends Command implements ContainerAwareInterface
     {
         $workload = $job->workload();
         $data = json_decode($workload, true);
-        $this->container
-            ->get('ronte.pusher')
-            ->send($data['deviceId'], $data['text'], $data['extra'], $data['badge']);
+        $this->pusher->send($data['deviceId'], $data['text'], $data['extra'], $data['badge']);
     }
 
     /**
@@ -66,7 +88,7 @@ class PushQueueWorkerCommand extends Command implements ContainerAwareInterface
     protected function configure()
     {
         $this
-            ->setName('ronte_ltd:push:worker:run')
+            ->setName('push:worker:run')
             ->setDescription('Run push queue worker');
     }
 }

@@ -15,7 +15,7 @@ class ApnsLoggerTest extends BaseTestCase
         $logger = new ApnsLogger(__DIR__ . '/../log');
 
         $this->assertEquals('apns', $this->invokeProperty($logger, 'logFileName'));
-        $this->assertEquals(__DIR__ . '/../log/ronte_ltd_pusher', $this->invokeProperty($logger, 'logDir'));
+        $this->assertEquals(__DIR__ . '/../log/push', $this->invokeProperty($logger, 'logDir'));
 
         return $logger;
     }
@@ -26,7 +26,7 @@ class ApnsLoggerTest extends BaseTestCase
      */
     public function testLog(ApnsLogger $logger)
     {
-        $fileName = __DIR__ . '/../log/ronte_ltd_pusher/apns.log';
+        $fileName = __DIR__ . '/../log/push/apns.log';
         if (file_exists($fileName)) {
             unlink($fileName);
         }

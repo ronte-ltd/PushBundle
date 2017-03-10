@@ -27,9 +27,11 @@ new RonteLtd\PushBundle\RonteLtdPushBundle(),
 ```yaml
 ronte_ltd_push:
     push_env: "%push_env%"
-        apns_certificates_dir: "%kernel.root_dir%/../var/apns/"
-        gearman_server: "%gearman_server%"
-        gearman_port: "%gearman_port%"
+    push_sound: true // bool
+    push_expiry: 12000 // message expiry, int value in seconds
+    apns_certificates_dir: "%kernel.root_dir%/../var/apns/"
+    gearman_server: "%gearman_server%"
+    gearman_port: "%gearman_port%"
 ```
 
 ### parameters.yml
@@ -52,19 +54,19 @@ gearman_port: "Add gearman port here"
  * @param array $extra - custom properties array, default: empty array
  * @param int $badge - badge, default: null
  */
-$container->get('ronte_ltd_push.pusher')->send($deviceId, $text, $extras, $badge);
+$container->get('push.pusher')->send($deviceId, $text, $extras, $badge);
 ```
 
 ###Send notifications on background
-Run ``ronte_ltd:push:worker:run`` command on background.
+Run ``push:worker:run`` command on background.
 ```php
-$pusher = $container->get('ronte_ltd_push.pusher');
+$pusher = $container->get('push.pusher');
 $pusher->addPush($deviceId, $text, $extras, $badge);
 ```
 
 ###Send bulk notifications
 ```php
-$pusher = $container->get('ronte_ltd_push.apns');
+$pusher = $container->get('push.apns');
 $pusher->addMessage(
     $pusher->createMessage($deviceId, $text, $extras, $badge)
 );

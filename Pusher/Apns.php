@@ -32,19 +32,28 @@ class Apns
     private $logger;
 
     /**
-     * @param $certificatesDir
+     * @var bool
      */
-    public function setCertificatesDir($certificatesDir)
-    {
-        $this->certificatesDir = $certificatesDir;
-    }
+    private $pushSound;
 
     /**
-     * @param $pushEnv
+     * @var int
      */
-    public function setPushEnv($pushEnv)
+    private $pushExpiry;
+
+    /**
+     * Apns constructor.
+     * @param $certificatesDir
+     * @param $pushEnv
+     * @param $pushSound
+     * @param $pushExpiry
+     */
+    public function __construct($certificatesDir, $pushEnv, $pushSound, $pushExpiry)
     {
+        $this->certificatesDir = $certificatesDir;
         $this->pushEnv = $pushEnv;
+        $this->pushSound = $pushSound;
+        $this->pushExpiry = $pushExpiry;
     }
 
     /**
@@ -61,13 +70,12 @@ class Apns
      * @param $text
      * @param array $extra
      * @param null $badge
-     * @return bool|int
+     * @return bool
      */
     public function send($deviceId, $text, $extra = [], $badge = null)
     {
         try {
             $push = $this->createPush();
-            $push->setLogger($this->logger);
             $push->connect();
 
             $msg = $this->createMessage($deviceId, $text, $extra, $badge);
@@ -75,13 +83,13 @@ class Apns
             $push->add($msg);
             $push->send();
             $push->disconnect();
-        } catch (\Exception $e) {
+        } catch (\ApnsPHP_Exception $e) {
             $this->logger->log($e->getMessage());
 
             return false;
         }
 
-        return 1;
+        return true;
     }
 
     /**
@@ -98,6 +106,7 @@ class Apns
         $push->setRootCertificationAuthority(
             $this->certificatesDir . $env . '/entrust_root_certification_authority.pem'
         );
+        $push->setLogger($this->logger);
 
         return $push;
     }
@@ -112,8 +121,8 @@ class Apns
     public function createMessage($deviceId, $text, $extra = [], $badge = null)
     {
         $msg = new \ApnsPHP_Message($deviceId);
-        $msg->setSound(true);
-        $msg->setExpiry(12000);
+        $msg->setSound($this->pushSound);
+        $msg->setExpiry($this->pushExpiry);
         $msg->setText($text);
 
         if (is_numeric($badge)) {

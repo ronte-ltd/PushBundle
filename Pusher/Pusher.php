@@ -1,6 +1,7 @@
 <?php
 
 namespace RonteLtd\PushBundle\Pusher;
+use Symfony\Component\Debug\Exception\ContextErrorException;
 
 /**
  * Class Pusher
@@ -78,7 +79,7 @@ class Pusher
                 'badge' => $badge,
 
             ]));
-        } catch (\Exception $e) {
+        } catch (ContextErrorException $e) {
             return false;
         }
 

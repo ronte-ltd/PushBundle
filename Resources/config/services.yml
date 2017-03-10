@@ -1,18 +1,32 @@
 services:
-    ronte_ltd_push.pusher:
+    push.pusher:
         class: RonteLtd\PushBundle\Pusher\Pusher
         calls:
-            - [ setApns, ["@ronte_ltd_push.apns"]]
-            - [ setGearmanServer, ["%ronte_ltd_push.gearman_server%"]]
-            - [ setGearmanPort, ["%ronte_ltd_push.gearman_port%"]]
+            - [ setApns, ["@push.apns"]]
+            - [ setGearmanServer, ["%push.gearman_server%"]]
+            - [ setGearmanPort, ["%push.gearman_port%"]]
 
-    ronte_ltd_push.apns:
+    push.apns:
         class: RonteLtd\PushBundle\Pusher\Apns
+        arguments:
+            - "%push.apns_certificates_dir%"
+            - "%push.push_env%"
+            - "%push.push_sound%"
+            - "%push.push_expiry%"
         calls:
-            - [ setCertificatesDir, [ "%ronte_ltd_push.apns_certificates_dir%" ]]
-            - [ setPushEnv,["%ronte_ltd_push.push_env%"]]
-            - [ setLogger,["@ronte_ltd_push.apns_logger"]]
+            - [ setLogger,["@push.apns_logger"]]
 
-    ronte_ltd_push.apns_logger:
+    push.apns_logger:
         class: RonteLtd\PushBundle\Logger\ApnsLogger
         arguments: ["%kernel.logs_dir%"]
+        public: false
+
+    push.queue_worker_command:
+        class: RonteLtd\PushBundle\Command\PushQueueWorkerCommand
+        arguments:
+            - "%push.gearman_server%"
+            - "%push.gearman_port%"
+        calls:
+            - [setPusher, ["@push.pusher"]]
+        tags:
+            - { name: console.command }

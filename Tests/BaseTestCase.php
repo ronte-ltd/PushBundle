@@ -3,7 +3,6 @@
 namespace RonteLtd\PushBundle\Tests;
 
 use RonteLtd\PushBundle\Logger\ApnsLogger;
-use RonteLtd\PushBundle\Pusher\Pusher;
 use RonteLtd\PushBundle\Pusher\Apns;
 
 class BaseTestCase extends \PHPUnit_Framework_TestCase
@@ -49,9 +48,7 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function createApns()
     {
-        $apns = new Apns();
-        $apns->setPushEnv('dev');
-        $apns->setCertificatesDir(__DIR__ . '/apns/');
+        $apns = new Apns(__DIR__ . '/apns/', 'dev', true, 12000);
         $apns->setLogger(new ApnsLogger(__DIR__ . '/log'));
 
         return $apns;

@@ -24,7 +24,7 @@ abstract class BaseLogger
      */
     public function __construct($logDir)
     {
-        $this->logDir = $logDir. '/ronte_ltd_pusher';
+        $this->logDir = $logDir. '/push';
     }
 
     /**
