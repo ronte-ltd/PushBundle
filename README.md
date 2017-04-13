@@ -51,24 +51,44 @@ gearman_port: "Add gearman port here"
 /**
  * @param string $deviceId - recipient device token
  * @param string $text - text message
- * @param array $extra - custom properties array, default: empty array
- * @param int $badge - badge, default: null
+ * @param array $payload - payload array
  */
-$container->get('push.pusher')->send($deviceId, $text, $extras, $badge);
+ $payload = [
+     'project' => $id,    // int|string name or id of an app, required
+     'pushType' => $type, // int type, required
+     'badge' => null,     // int|null, optional
+     'headers' => [],     // array of headers, optional
+     'extra' => [],       // additional info array, optional
+ ];
+$container->get('push.pusher')->send($deviceId, $text, $payload);
 ```
 
 ###Send notifications on background
 Run ``push:worker:run`` command on background.
 ```php
+$payload = [
+     'project' => $id,    // int|string name or id of an app, required
+     'pushType' => $type, // int type, required
+     'badge' => null,     // int|null, optional
+     'headers' => [],     // array of headers, optional
+     'extra' => [],       // additional info array, optional
+ ];
 $pusher = $container->get('push.pusher');
-$pusher->addPush($deviceId, $text, $extras, $badge);
+$pusher->addPush($deviceId, $text, $payload);
 ```
 
 ###Send bulk notifications
 ```php
+$payload = [
+     'project' => $id,    // int|string name or id of an app, required
+     'pushType' => $type, // int type, required
+     'badge' => null,     // int|null, optional
+     'headers' => [],     // array of headers, optional
+     'extra' => [],       // additional info array, optional
+ ];
 $pusher = $container->get('push.apns');
 $pusher->addMessage(
-    $pusher->createMessage($deviceId, $text, $extras, $badge)
+    $pusher->createMessage($deviceId, $text, $payload)
 );
 // Use addMessage as much as needed
 $pusher->runQueue();

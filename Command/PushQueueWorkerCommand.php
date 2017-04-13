@@ -79,7 +79,7 @@ class PushQueueWorkerCommand extends Command
     {
         $workload = $job->workload();
         $data = json_decode($workload, true);
-        $this->pusher->send($data['deviceId'], $data['text'], $data['extra'], $data['badge']);
+        $this->pusher->send($data['deviceId'], $data['text'], $data['payload']);
     }
 
     /**

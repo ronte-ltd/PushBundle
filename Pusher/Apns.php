@@ -68,24 +68,25 @@ class Apns
      * Send message
      * @param $deviceId
      * @param $text
-     * @param array $extra
-     * @param null $badge
+     * @param array $payload
      * @return bool
      */
-    public function send($deviceId, $text, $extra = [], $badge = null)
+    public function send(string $deviceId, string $text, array $payload)
     {
         try {
             $push = $this->createPush();
             $push->connect();
 
-            $msg = $this->createMessage($deviceId, $text, $extra, $badge);
+            $msg = $this->createMessage($deviceId, $text, $payload);
 
             $push->add($msg);
             $push->send();
             $push->disconnect();
         } catch (\ApnsPHP_Exception $e) {
             $this->logger->log($e->getMessage());
-
+            return false;
+        } catch (\InvalidArgumentException $e) {
+            $this->logger->log($e->getMessage());
             return false;
         }
 
@@ -112,18 +113,37 @@ class Apns
     }
 
     /**
-     * @param $deviceId
-     * @param $text
-     * @param array $extra
-     * @param null $badge
+     * @param string $deviceId
+     * @param string $text
+     * @param array $payload
      * @return \ApnsPHP_Message
      */
-    public function createMessage($deviceId, $text, $extra = [], $badge = null)
+    public function createMessage(string $deviceId, string $text, array $payload)
     {
+        $this->payloadValidate($payload);
+
+        $extra = $payload['extra'] ?? [];
+        $badge = $payload['badge'] ?? null;
+        $headers = $payload['headers'] ?? [];
+
+        $messageBody = json_encode([
+            'push' => [
+                'header' => $headers,
+                'body' => [
+                    'message' => $text,
+                ],
+                'metaInfo' => [
+                    'project' => $payload['project'],
+                    'pushType' => $payload['pushType'] ,
+                    'iconBadgeNumber' => $badge,
+                ],
+            ]
+        ]);
+
         $msg = new \ApnsPHP_Message($deviceId);
         $msg->setSound($this->pushSound);
         $msg->setExpiry($this->pushExpiry);
-        $msg->setText($text);
+        $msg->setText($messageBody);
 
         if (is_numeric($badge)) {
             $msg->setBadge($badge);
@@ -159,6 +179,22 @@ class Apns
 
         $push->send();
         $push->disconnect();
+    }
+
+    /**
+     * @param array $payload
+     */
+    private function payloadValidate(array $payload)
+    {
+        if (!isset($payload['project'])
+            || !in_array(gettype($payload['project']), ['string', 'integer'])
+        ) {
+            throw new \InvalidArgumentException('Insufficient "project" value in payload array');
+        }
+
+        if (!isset($payload['pushType']) || !is_numeric($payload['pushType'])) {
+            throw new \InvalidArgumentException('Insufficient "(int)pushType" value in payload array');
+        }
     }
 
 }

@@ -33,17 +33,17 @@ class Pusher
     }
 
     /**
-     * @param $gearmanServer
+     * @param string $gearmanServer
      */
-    public function setGearmanServer($gearmanServer)
+    public function setGearmanServer(string $gearmanServer)
     {
         $this->gearmanServer = $gearmanServer;
     }
 
     /**
-     * @param $gearmanPort
+     * @param int $gearmanPort
      */
-    public function setGearmanPort($gearmanPort)
+    public function setGearmanPort(int $gearmanPort)
     {
         $this->gearmanPort = $gearmanPort;
     }
@@ -51,23 +51,21 @@ class Pusher
     /**
      * @param $deviceId
      * @param $text
-     * @param array $extra
-     * @param null $badge
+     * @param array $payload
      * @return bool
      */
-    public function send($deviceId, $text, $extra = [], $badge = null)
+    public function send(string $deviceId, string $text, array $payload)
     {
-        return $this->apns->send($deviceId, $text, $extra, $badge);
+        return $this->apns->send($deviceId, $text, $payload);
     }
 
     /**
      * @param $deviceId
      * @param $text
-     * @param array $extra
-     * @param null $badge
+     * @param array $payload
      * @return bool
      */
-    public function addPush($deviceId, $text, $extra = [], $badge = null)
+    public function addPush(string $deviceId, string $text, array $payload)
     {
         $client = $this->createClient();
 
@@ -75,9 +73,7 @@ class Pusher
             $client->doBackground('sendPush', json_encode([
                 'deviceId' => $deviceId,
                 'text' => $text,
-                'extra' => $extra,
-                'badge' => $badge,
-
+                'payload' => $payload,
             ]));
         } catch (ContextErrorException $e) {
             return false;
@@ -99,6 +95,4 @@ class Pusher
 
         return $client;
     }
-
-
 }
