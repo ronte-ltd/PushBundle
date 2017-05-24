@@ -64,7 +64,7 @@ class Apns
         $this->logger = $logger;
     }
 
-     /**
+    /**
      * Change sertificates directory.
      * @param string $dir
      */
