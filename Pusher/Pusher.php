@@ -49,6 +49,15 @@ class Pusher
     }
 
     /**
+     * Change sertificates directory.
+     * @param string $dir
+     */
+    public function changeSertificatesDir(string $dir)
+    {
+        $this->apns->changeSertificatesDir($dir);
+    }
+
+    /**
      * @param $deviceId
      * @param $text
      * @param array $payload

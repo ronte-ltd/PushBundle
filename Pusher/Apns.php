@@ -64,6 +64,15 @@ class Apns
         $this->logger = $logger;
     }
 
+     /**
+     * Change sertificates directory.
+     * @param string $dir
+     */
+    public function changeSertificatesDir(string $dir)
+    {
+        $this->certificatesDir = $dir;
+    }
+
     /**
      * Send message
      * @param $deviceId

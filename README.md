@@ -94,3 +94,8 @@ $pusher->addMessage(
 $pusher->runQueue();
 ```
 
+###Change sertificates directory
+```php
+$pusher->changeSertificatesDir($dir);
+```
+
