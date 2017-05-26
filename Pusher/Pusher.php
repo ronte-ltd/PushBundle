@@ -49,12 +49,15 @@ class Pusher
     }
 
     /**
-     * Change sertificates directory.
-     * @param string $dir
+     * @param string $deviceId
+     * @param string $text
+     * @param array $payload
+     * @param array $credentials
+     * @return bool
      */
-    public function changeSertificatesDir(string $dir)
+    public function send(string $deviceId, string $text, array $payload, array $credentials)
     {
-        $this->apns->changeSertificatesDir($dir);
+        return $this->apns->send($deviceId, $text, $payload, $credentials);
     }
 
     /**
@@ -63,18 +66,7 @@ class Pusher
      * @param array $payload
      * @return bool
      */
-    public function send(string $deviceId, string $text, array $payload)
-    {
-        return $this->apns->send($deviceId, $text, $payload);
-    }
-
-    /**
-     * @param $deviceId
-     * @param $text
-     * @param array $payload
-     * @return bool
-     */
-    public function addPush(string $deviceId, string $text, array $payload)
+    public function addPush(string $deviceId, string $text, array $payload , array $credentials)
     {
         $client = $this->createClient();
 
@@ -83,6 +75,7 @@ class Pusher
                 'deviceId' => $deviceId,
                 'text' => $text,
                 'payload' => $payload,
+                'credentials' => $credentials,
             ]));
         } catch (ContextErrorException $e) {
             return false;

@@ -26,17 +26,14 @@ new RonteLtd\PushBundle\RonteLtdPushBundle(),
 ### config.yml
 ```yaml
 ronte_ltd_push:
-    push_env: "%push_env%"
     push_sound: true // bool
     push_expiry: 12000 // message expiry, int value in seconds
-    apns_certificates_dir: "%kernel.root_dir%/../var/apns/"
     gearman_server: "%gearman_server%"
     gearman_port: "%gearman_port%"
 ```
 
 ### parameters.yml
 ```yaml
-push_env: "valid values: 'prod', 'dev'"
 gearman_server: "Add gearman server here"
 gearman_port: "Add gearman port here"
 ```
@@ -60,7 +57,13 @@ gearman_port: "Add gearman port here"
      'headers' => [],     // array of headers, optional
      'extra' => [],       // additional info array, optional
  ];
-$container->get('push.pusher')->send($deviceId, $text, $payload);
+ 
+ $credentials = [
+     'certificate' => $fullPathToCertificate, // required
+     'passPhrase' => $passPhrase,
+     'certificationAuthorityFile' => $fullPathToCertificationAuthorityFile,
+ ];
+$container->get('push.pusher')->send($deviceId, $text, $payload, $creadentials);
 ```
 
 ###Send notifications on background
@@ -73,8 +76,15 @@ $payload = [
      'headers' => [],     // array of headers, optional
      'extra' => [],       // additional info array, optional
  ];
+ 
+$credentials = [
+  'certificate' => $fullPathToCertificate, // required
+  'passPhrase' => $passPhrase,
+  'certificationAuthorityFile' => $fullPathToCertificationAuthorityFile,
+];
+  
 $pusher = $container->get('push.pusher');
-$pusher->addPush($deviceId, $text, $payload);
+$pusher->addPush($deviceId, $text, $payload, , $creadentials);
 ```
 
 ###Send bulk notifications
@@ -91,11 +101,12 @@ $pusher->addMessage(
     $pusher->createMessage($deviceId, $text, $payload)
 );
 // Use addMessage as much as needed
-$pusher->runQueue();
-```
 
-###Change sertificates directory
-```php
-$pusher->changeSertificatesDir($dir);
-```
+$credentials = [
+  'certificate' => $fullPathToCertificate, // required
+  'passPhrase' => $passPhrase,
+  'certificationAuthorityFile' => $fullPathToCertificationAuthorityFile,
+];
+
+$pusher->runQueue($credentials);
 

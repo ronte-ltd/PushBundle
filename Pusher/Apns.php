@@ -16,17 +16,6 @@ class Apns
     private $messages = [];
 
     /**
-     * Base certificates path
-     * @var string
-     */
-    private $certificatesDir;
-
-    /**
-     * @var string
-     */
-    private $pushEnv;
-
-    /**
      * @var ApnsLogger
      */
     private $logger;
@@ -43,15 +32,11 @@ class Apns
 
     /**
      * Apns constructor.
-     * @param $certificatesDir
-     * @param $pushEnv
      * @param $pushSound
      * @param $pushExpiry
      */
-    public function __construct($certificatesDir, $pushEnv, $pushSound, $pushExpiry)
+    public function __construct($pushSound, $pushExpiry)
     {
-        $this->certificatesDir = $certificatesDir;
-        $this->pushEnv = $pushEnv;
         $this->pushSound = $pushSound;
         $this->pushExpiry = $pushExpiry;
     }
@@ -65,25 +50,17 @@ class Apns
     }
 
     /**
-     * Change sertificates directory.
-     * @param string $dir
-     */
-    public function changeSertificatesDir(string $dir)
-    {
-        $this->certificatesDir = $dir;
-    }
-
-    /**
      * Send message
      * @param $deviceId
      * @param $text
      * @param array $payload
+     * @param array $credentials
      * @return bool
      */
-    public function send(string $deviceId, string $text, array $payload)
+    public function send(string $deviceId, string $text, array $payload, array $credentials)
     {
         try {
-            $push = $this->createPush();
+            $push = $this->createPush($credentials);
             $push->connect();
 
             $msg = $this->createMessage($deviceId, $text, $payload);
@@ -103,19 +80,27 @@ class Apns
     }
 
     /**
+     * @param array $credentials
      * @return \ApnsPHP_Push
+     * @throws \ApnsPHP_Exception
      */
-    public function createPush()
+    public function createPush(array $credentials)
     {
-        $env = $this->pushEnv;
+        if (empty($credentials['certificate'])) {
+            throw new \ApnsPHP_Exception('Certificate file path not specified!');
+        }
+
         $environment = \ApnsPHP_Abstract::ENVIRONMENT_PRODUCTION;
-        $push = new \ApnsPHP_Push(
-            $environment,
-            $this->certificatesDir . $env . '/server_certificates_bundle_sandbox.pem'
-        );
-        $push->setRootCertificationAuthority(
-            $this->certificatesDir . $env . '/entrust_root_certification_authority.pem'
-        );
+        $push = new \ApnsPHP_Push($environment, $credentials['certificate']);
+
+        if (!empty($credentials['passPhrase'])) {
+            $push->setProviderCertificatePassphrase($credentials['passPhrase']);
+        }
+
+        if (!empty($credentials['certificationAuthorityFile']) && is_file($credentials['certificationAuthorityFile'])) {
+            $push->setRootCertificationAuthority($credentials['certificationAuthorityFile']);
+        }
+
         $push->setLogger($this->logger);
 
         return $push;
@@ -175,11 +160,13 @@ class Apns
     }
 
     /**
-     * Run queue
+     * Run queue.
+     *
+     * @param array $credentials
      */
-    public function runQueue()
+    public function runQueue(array $credentials)
     {
-        $push = $this->createPush();
+        $push = $this->createPush($credentials);
         $push->connect();
 
         foreach ($this->messages as $message) {

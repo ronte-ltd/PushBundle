@@ -9,8 +9,6 @@ services:
     push.apns:
         class: RonteLtd\PushBundle\Pusher\Apns
         arguments:
-            - "%push.apns_certificates_dir%"
-            - "%push.push_env%"
             - "%push.push_sound%"
             - "%push.push_expiry%"
         calls:
