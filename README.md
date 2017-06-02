@@ -26,6 +26,7 @@ new RonteLtd\PushBundle\RonteLtdPushBundle(),
 ### config.yml
 ```yaml
 ronte_ltd_push:
+    push_env: "%push_env%"
     push_sound: true // bool
     push_expiry: 12000 // message expiry, int value in seconds
     gearman_server: "%gearman_server%"
@@ -34,6 +35,7 @@ ronte_ltd_push:
 
 ### parameters.yml
 ```yaml
+push_env: "valid values: 'prod', 'dev'"
 gearman_server: "Add gearman server here"
 gearman_port: "Add gearman port here"
 ```

@@ -11,6 +11,11 @@ use RonteLtd\PushBundle\Logger\ApnsLogger;
 class Apns
 {
     /**
+     * @var string
+     */
+    private $pushEnv;
+
+    /**
      * @var array
      */
     private $messages = [];
@@ -35,8 +40,9 @@ class Apns
      * @param $pushSound
      * @param $pushExpiry
      */
-    public function __construct($pushSound, $pushExpiry)
+    public function __construct($pushEnv, $pushSound, $pushExpiry)
     {
+        $this->pushEnv = $pushEnv;
         $this->pushSound = $pushSound;
         $this->pushExpiry = $pushExpiry;
     }
@@ -90,7 +96,9 @@ class Apns
             throw new \ApnsPHP_Exception('Certificate file path not specified!');
         }
 
-        $environment = \ApnsPHP_Abstract::ENVIRONMENT_PRODUCTION;
+        $environment = $this->pushEnv === 'dev' ? \ApnsPHP_Abstract::ENVIRONMENT_SANDBOX
+            : \ApnsPHP_Abstract::ENVIRONMENT_PRODUCTION;
+
         $push = new \ApnsPHP_Push($environment, $credentials['certificate']);
 
         if (!empty($credentials['passPhrase'])) {

@@ -11,6 +11,7 @@ class RonteLtdPushExtension extends ConfigurableExtension
 {
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
+        $container->setParameter('push.push_env', $mergedConfig['push_env']);
         $container->setParameter('push.push_sound', $mergedConfig['push_sound']);
         $container->setParameter('push.push_expiry', $mergedConfig['push_expiry']);
         $container->setParameter('push.gearman_server', $mergedConfig['gearman_server']);

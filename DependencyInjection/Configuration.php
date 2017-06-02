@@ -14,6 +14,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('push_env')->end()
                 ->scalarNode('push_sound')->end()
                 ->scalarNode('push_expiry')->end()
                 ->scalarNode('gearman_server')->end()
