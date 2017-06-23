@@ -71,7 +71,7 @@ class Pusher
         $client = $this->createClient();
 
         try {
-            $client->doBackground('sendPush', json_encode([
+            $client->doBackground('sendMobilePush', json_encode([
                 'deviceId' => $deviceId,
                 'text' => $text,
                 'payload' => $payload,

@@ -61,7 +61,7 @@ class PushQueueWorkerCommand extends Command
             $this->gearmanServer,
             $this->gearmanPort
         );
-        $worker->addFunction('sendPush', [$this, 'sendPush']);
+        $worker->addFunction('sendMobilePush', [$this, 'sendMobilePush']);
 
         while (1) {
             $worker->work();
@@ -75,7 +75,7 @@ class PushQueueWorkerCommand extends Command
     /**
      * @param $job
      */
-    public function sendPush($job)
+    public function sendMobilePush($job)
     {
         $workload = $job->workload();
         $data = json_decode($workload, true);
