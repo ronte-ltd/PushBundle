@@ -125,27 +125,26 @@ class Apns
         $this->payloadValidate($payload);
 
         $extra = $payload['extra'] ?? [];
+        $data = $payload['data'] ?? [];
         $badge = $payload['badge'] ?? null;
         $headers = $payload['headers'] ?? [];
 
-        $messageBody = json_encode([
-            'push' => [
-                'header' => $headers,
-                'body' => [
-                    'message' => $text,
-                ],
-                'metaInfo' => [
-                    'project' => $payload['project'],
-                    'pushType' => $payload['pushType'] ,
-                    'iconBadgeNumber' => $badge,
-                ],
-            ]
+        $push = json_encode([
+            'header' => $headers,
+            'metaInfo' => [
+                'project' => $payload['project'],
+                'pushType' => $payload['pushType'] ,
+                'iconBadgeNumber' => $badge,
+            ],
+            'data' => $data,
         ]);
+
 
         $msg = new \ApnsPHP_Message($deviceId);
         $msg->setSound($this->pushSound);
         $msg->setExpiry($this->pushExpiry);
-        $msg->setText($messageBody);
+        $msg->setText($text);
+        $msg->setCustomProperty('push', $push);
 
         if (is_numeric($badge)) {
             $msg->setBadge($badge);
