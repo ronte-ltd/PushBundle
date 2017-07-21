@@ -59,7 +59,7 @@ gearman_port: "Add gearman port here"
      'headers' => [],     // array of headers, optional
      'extra' => [],       // additional info array, optional
  ];
- 
+
  $credentials = [
      'certificate' => $fullPathToCertificate, // required
      'passPhrase' => $passPhrase,
@@ -69,7 +69,8 @@ $container->get('push.pusher')->send($deviceId, $text, $payload, $creadentials);
 ```
 
 ###Send notifications on background
-Run ``push:worker:run`` command on background.
+Run ``push:worker:run --process_id=devFirst`` command on background.
+Use ``--process_id`` option if there's multiple projects on a server using this command.
 ```php
 $payload = [
      'project' => $id,    // int|string name or id of an app, required
@@ -78,13 +79,13 @@ $payload = [
      'headers' => [],     // array of headers, optional
      'extra' => [],       // additional info array, optional
  ];
- 
+
 $credentials = [
   'certificate' => $fullPathToCertificate, // required
   'passPhrase' => $passPhrase,
   'certificationAuthorityFile' => $fullPathToCertificationAuthorityFile,
 ];
-  
+
 $pusher = $container->get('push.pusher');
 $pusher->addPush($deviceId, $text, $payload, , $creadentials);
 ```

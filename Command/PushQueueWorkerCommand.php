@@ -5,6 +5,7 @@ namespace RonteLtd\PushBundle\Command;
 use RonteLtd\PushBundle\Pusher\Pusher;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -56,12 +57,13 @@ class PushQueueWorkerCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $process = $input->getOption('process_id');
         $worker = new \GearmanWorker();
         $worker->addServer(
             $this->gearmanServer,
             $this->gearmanPort
         );
-        $worker->addFunction('sendMobilePush', [$this, 'sendMobilePush']);
+        $worker->addFunction($process . 'SendMobilePush', [$this, 'sendMobilePush']);
 
         while (1) {
             $worker->work();
@@ -89,6 +91,8 @@ class PushQueueWorkerCommand extends Command
     {
         $this
             ->setName('push:worker:run')
-            ->setDescription('Run push queue worker');
+            ->setDescription('Run push queue worker')
+            ->addOption('process_id', null, InputOption::VALUE_REQUIRED, 'Id of a process if there\'s multiple projects on a server using this command', 'push')
+        ;
     }
 }
