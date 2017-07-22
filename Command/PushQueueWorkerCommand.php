@@ -34,10 +34,11 @@ class PushQueueWorkerCommand extends Command
      * @param string $gearmanServer
      * @param $gearmanPort
      */
-    public function __construct($gearmanServer, $gearmanPort)
+    public function __construct($gearmanServer, $gearmanPort, $bgWorkerId)
     {
         $this->gearmanServer = $gearmanServer;
         $this->gearmanPort = $gearmanPort;
+        $this->bgWorkerId = $bgWorkerId;
 
         parent::__construct();
     }
@@ -57,13 +58,13 @@ class PushQueueWorkerCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $process = $input->getOption('process_id');
+        $prefix = $this->bgWorkerId;
         $worker = new \GearmanWorker();
         $worker->addServer(
             $this->gearmanServer,
             $this->gearmanPort
         );
-        $worker->addFunction($process . 'SendMobilePush', [$this, 'sendMobilePush']);
+        $worker->addFunction($prefix . 'SendMobilePush', [$this, 'sendMobilePush']);
 
         while (1) {
             $worker->work();
@@ -92,7 +93,6 @@ class PushQueueWorkerCommand extends Command
         $this
             ->setName('push:worker:run')
             ->setDescription('Run push queue worker')
-            ->addOption('process_id', null, InputOption::VALUE_REQUIRED, 'Id of a process if there\'s multiple projects on a server using this command', 'push')
         ;
     }
 }

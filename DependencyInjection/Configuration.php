@@ -17,6 +17,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('push_env')->end()
                 ->scalarNode('push_sound')->end()
                 ->scalarNode('push_expiry')->end()
+                ->scalarNode('bg_worker_id')->end()
                 ->scalarNode('gearman_server')->end()
                 ->scalarNode('gearman_port')->end()
             ->end()

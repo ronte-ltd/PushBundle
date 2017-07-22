@@ -25,6 +25,11 @@ class Pusher
     protected $gearmanPort;
 
     /**
+     * @var string
+     */
+    protected $bgWorkerId;
+
+    /**
      * @param Apns $apns
      */
     public function setApns(Apns $apns)
@@ -49,6 +54,14 @@ class Pusher
     }
 
     /**
+     * @param string $workerId
+     */
+    public function setBgWorkerId(string $workerId)
+    {
+        $this->bgWorkerId = $workerId;
+    }
+
+    /**
      * @param string $deviceId
      * @param string $text
      * @param array $payload
@@ -61,17 +74,19 @@ class Pusher
     }
 
     /**
-     * @param $deviceId
-     * @param $text
+     * @param string $deviceId
+     * @param string $text
      * @param array $payload
+     * @param array $credentials
      * @return bool
      */
     public function addPush(string $deviceId, string $text, array $payload , array $credentials)
     {
         $client = $this->createClient();
+        $prefix = $this->bgWorkerId;
 
         try {
-            $client->doBackground('sendMobilePush', json_encode([
+            $client->doBackground($prefix. 'SendMobilePush', json_encode([
                 'deviceId' => $deviceId,
                 'text' => $text,
                 'payload' => $payload,

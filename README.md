@@ -29,6 +29,7 @@ ronte_ltd_push:
     push_env: "%push_env%"
     push_sound: true // bool
     push_expiry: 12000 // message expiry, int value in seconds
+    bg_worker_id: "%bg_worker_id%"
     gearman_server: "%gearman_server%"
     gearman_port: "%gearman_port%"
 ```
@@ -38,6 +39,7 @@ ronte_ltd_push:
 push_env: "valid values: 'prod', 'dev'"
 gearman_server: "Add gearman server here"
 gearman_port: "Add gearman port here"
+bg_worker_id: test //This will be a prefix for a background function in case multiple projects on a server using this command.
 ```
 
 ### Certificates
@@ -69,8 +71,7 @@ $container->get('push.pusher')->send($deviceId, $text, $payload, $creadentials);
 ```
 
 ###Send notifications on background
-Run ``push:worker:run --process_id=devFirst`` command on background.
-Use ``--process_id`` option if there's multiple projects on a server using this command.
+Run ``push:worker:run`` command on background.
 ```php
 $payload = [
      'project' => $id,    // int|string name or id of an app, required

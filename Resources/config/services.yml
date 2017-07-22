@@ -3,6 +3,7 @@ services:
         class: RonteLtd\PushBundle\Pusher\Pusher
         calls:
             - [ setApns, ["@push.apns"]]
+            - [ setBgWorkerId, ["%push.bg_worker_id%"]]
             - [ setGearmanServer, ["%push.gearman_server%"]]
             - [ setGearmanPort, ["%push.gearman_port%"]]
 
@@ -25,6 +26,7 @@ services:
         arguments:
             - "%push.gearman_server%"
             - "%push.gearman_port%"
+            - "%push.bg_worker_id%"
         calls:
             - [setPusher, ["@push.pusher"]]
         tags:
