@@ -83,7 +83,7 @@ class Pusher
     public function addPush(string $deviceId, string $text, array $payload , array $credentials)
     {
         $client = $this->createClient();
-        $prefix = $this->bgWorkerId;
+        $prefix = str_replace(' ', '', $this->bgWorkerId);
 
         try {
             $client->doBackground($prefix. 'SendMobilePush', json_encode([

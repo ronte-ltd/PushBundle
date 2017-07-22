@@ -30,6 +30,11 @@ class PushQueueWorkerCommand extends Command
     private $gearmanPort;
 
     /**
+     * @var string
+     */
+    private $bgWorkerId;
+
+    /**
      * PushQueueWorkerCommand constructor.
      * @param string $gearmanServer
      * @param $gearmanPort
