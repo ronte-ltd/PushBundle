@@ -63,24 +63,24 @@ class Pusher
 
     /**
      * @param string $deviceId
-     * @param string $text
+     * @param string|array $text
      * @param array $payload
      * @param array $credentials
      * @return bool
      */
-    public function send(string $deviceId, string $text, array $payload, array $credentials)
+    public function send(string $deviceId, $text, array $payload, array $credentials)
     {
         return $this->apns->send($deviceId, $text, $payload, $credentials);
     }
 
     /**
      * @param string $deviceId
-     * @param string $text
+     * @param string|array $text
      * @param array $payload
      * @param array $credentials
      * @return bool
      */
-    public function addPush(string $deviceId, string $text, array $payload , array $credentials)
+    public function addPush(string $deviceId, $text, array $payload , array $credentials)
     {
         $client = $this->createClient();
         $prefix = str_replace(' ', '', $this->bgWorkerId);
