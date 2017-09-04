@@ -63,7 +63,7 @@ class Apns
      * @param array $credentials
      * @return bool
      */
-    public function send(string $deviceId, string $text, array $payload, array $credentials)
+    public function send(string $deviceId, $text, array $payload, array $credentials)
     {
         try {
             $push = $this->createPush($credentials);
@@ -128,6 +128,7 @@ class Apns
         $data = $payload['data'] ?? [];
         $badge = $payload['badge'] ?? null;
         $headers = $payload['headers'] ?? [];
+        $mutableContent = $payload['mutableContent'] ?? false;
 
         $push = json_encode([
             'header' => $headers,
@@ -139,12 +140,19 @@ class Apns
             'data' => $data,
         ]);
 
-
         $msg = new \ApnsPHP_Message($deviceId);
+
+        if (is_array($text)) {
+            $msg->setTitle($text['title']);
+            $msg->setText($text['body']);
+        } else {
+            $msg->setText($text);
+        }
+
         $msg->setSound($this->pushSound);
         $msg->setExpiry($this->pushExpiry);
-        $msg->setText($text);
         $msg->setCustomProperty('push', $push);
+        $msg->setMutableContent($mutableContent);
 
         if (is_numeric($badge)) {
             $msg->setBadge($badge);
