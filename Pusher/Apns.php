@@ -129,14 +129,15 @@ class Apns
         $badge = $payload['badge'] ?? null;
         $headers = $payload['headers'] ?? [];
         $mutableContent = $payload['mutableContent'] ?? false;
+        $extraMetaInfo = $payload['extraMetaInfo'] ?? [];
 
         $push = json_encode([
             'header' => $headers,
-            'metaInfo' => [
+            'metaInfo' => array_merge($extraMetaInfo, [
                 'project' => $payload['project'],
                 'pushType' => $payload['pushType'] ,
                 'iconBadgeNumber' => $badge,
-            ],
+            ]),
             'data' => $data,
         ]);
 
